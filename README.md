@@ -2,6 +2,23 @@
 
 Aplicación web para clínicas y consultorios: los pacientes reservan citas en línea y el personal administra toda la operación desde un panel.
 
+
+## Capturas
+
+**Panel del administrador**
+
+![Panel del administrador](docs/capturas/panel.jpg)
+
+**Horarios de atención por doctor y consultorio**
+
+![Horarios de atención por doctor y consultorio](docs/capturas/horarios.jpg)
+
+**Gestión de doctores**
+
+![Gestión de doctores](docs/capturas/doctores.jpg)
+
+_Capturas tomadas con datos de prueba._
+
 ## Funciones
 
 - Calendario de reservas por consultorio y doctor
