@@ -5,6 +5,8 @@ Aplicación web para clínicas y consultorios: los pacientes reservan citas en l
 
 ## Capturas
 
+**Demo interactiva (datos ficticios):** [anderssont-var.github.io/AnderssonT-var.github/demos/reservas/admin.html](https://anderssont-var.github.io/AnderssonT-var.github/demos/reservas/admin.html)
+
 **Panel del administrador**
 
 ![Panel del administrador](docs/capturas/panel.jpg)
