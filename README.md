@@ -6,7 +6,8 @@ Reserva de citas médicas en línea para clínicas y consultorios. Tres perfiles
 - **Doctor**: agenda del día y de la semana, atención de consultas (signos vitales, diagnóstico, receta), historial de sus pacientes y su propio horario.
 - **Paciente**: reserva guiada en cinco pasos, sus citas (con cancelación), historial clínico y recetas en PDF.
 
-**Demo navegable con recorrido guiado (datos ficticios):** [anderssont-var.github.io/AnderssonT-var.github/demos/tovelmedical/](https://anderssont-var.github.io/AnderssonT-var.github/demos/tovelmedical/)
+**Recorrido:** [cómo funciona y pantallas de los tres perfiles](https://anderssont-var.github.io/AnderssonT-var.github/demos/tovelmedical/)  
+**Demo navegable (datos ficticios):** [probar TovelMedical](https://anderssont-var.github.io/AnderssonT-var.github/demos/tovelmedical/app/)
 
 ![Portada](docs/capturas/landing.jpg)
 
