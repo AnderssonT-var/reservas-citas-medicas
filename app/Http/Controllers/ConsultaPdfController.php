@@ -14,6 +14,7 @@ class ConsultaPdfController extends Controller
         $consulta->load('paciente.user', 'doctor.user', 'doctor.especialidad');
 
         return Pdf::loadView('pdf.consulta', ['consulta' => $consulta, 'ajustes' => Ajuste::todos()])
+            ->setOption('isFontSubsettingEnabled', true)
             ->setPaper('a5')
             ->stream('consulta-'.$consulta->id.'.pdf');
     }

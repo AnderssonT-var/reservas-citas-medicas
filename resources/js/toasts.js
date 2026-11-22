@@ -6,6 +6,12 @@ const icono = {
 
 let region;
 
+// Apila los toasts abiertos: el más reciente queda junto al borde.
+const apilar = () => {
+  const abiertos = [...(region?.querySelectorAll('.toast:not([data-saliendo])') ?? [])].reverse();
+  abiertos.forEach((t, i) => t.style.setProperty('--i', i));
+};
+
 export function toast(mensaje, tipo = 'ok', ms = 5000) {
   region ??= document.getElementById('toasts');
   if (!region) return;
@@ -16,6 +22,7 @@ export function toast(mensaje, tipo = 'ok', ms = 5000) {
   el.querySelector('p').textContent = mensaje;
   region.append(el);
   el.showPopover?.();
+  apilar();
 
   if ('ariaNotify' in document) document.ariaNotify(mensaje);
   else {
@@ -27,7 +34,9 @@ export function toast(mensaje, tipo = 'ok', ms = 5000) {
   const cerrar = () => {
     clearTimeout(timer);
     const enfocado = el.contains(document.activeElement);
+    el.dataset.saliendo = '';
     el.hidePopover?.();
+    apilar();
     setTimeout(() => el.remove(), 300);
     if (enfocado) document.querySelector('main')?.focus();
   };

@@ -87,7 +87,7 @@ export function iniciarReserva() {
     control?.abort(); control = new AbortController();
     cargando(cajaDoctores, 2);
     try {
-      const url = new URL(api.doctores, location.origin);
+      const url = new URL(api.doctores, location.href);
       if (id) url.searchParams.set('especialidad', id);
       estado.doctores = await obtener(url, control.signal);
     } catch (e) { if (e.name === 'AbortError') return; cajaDoctores.innerHTML = '<p class="notice error">No pudimos cargar los doctores. Recarga la página.</p>'; return; }
@@ -138,7 +138,7 @@ export function iniciarReserva() {
     cargando(cajaBloques, 8, 52);
     let bloques;
     try {
-      const url = new URL(api.bloques.replace('__id__', estado.doctor), location.origin);
+      const url = new URL(api.bloques.replace("__id__", estado.doctor), location.href);
       url.searchParams.set('fecha', fecha);
       bloques = await obtener(url, control.signal);
     } catch (e) { if (e.name === 'AbortError') return; cajaBloques.innerHTML = '<p class="notice error">No pudimos cargar los horarios.</p>'; return; }

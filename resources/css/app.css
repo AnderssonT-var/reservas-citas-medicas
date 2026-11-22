@@ -10,6 +10,8 @@
 @layer reset {
   *, *::before, *::after { box-sizing: border-box; }
   * { margin: 0; }
+  /* Devuelve el centrado nativo que el reset le quita a diálogos y popovers. */
+  :where(dialog, [popover]) { margin: auto; }
   html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
   body { min-height: 100dvh; line-height: 1.5; -webkit-font-smoothing: antialiased; }
   img, svg, video { display: block; max-width: 100%; }
@@ -489,9 +491,13 @@
 
   /* Toasts: popover manual en una región fija */
   .toasts { position: fixed; z-index: 100; inset: auto 1rem 1rem auto; display: flex; flex-direction: column; gap: .5rem; pointer-events: none; }
-  @media (width < 960px) { .toasts { inset: calc(env(safe-area-inset-top) + .75rem) .75rem auto .75rem; } }
+  @media (width < 960px) {
+    .toast { inset: calc(env(safe-area-inset-top) + .75rem + var(--i, 0) * 4.6rem) .75rem auto .75rem; min-width: 0; max-width: none; }
+  }
   .toast {
-    position: static; inset: auto; margin: 0;
+    /* Popover en la capa superior: se posiciona solo; --i lo apila sobre los anteriores. */
+    position: fixed; margin: 0;
+    inset: auto 1rem calc(1rem + var(--i, 0) * 4.6rem) auto;
     pointer-events: auto;
     display: flex; align-items: center; gap: .75rem;
     min-width: min(360px, 100%);
@@ -505,7 +511,7 @@
     font-weight: 500;
     font-size: .92rem;
     opacity: 0; translate: 0 10px; scale: .97;
-    transition: opacity var(--dur-2) var(--ease-out), translate var(--dur-3) var(--ease-out), scale var(--dur-3) var(--ease-out), display var(--dur-2) allow-discrete, overlay var(--dur-2) allow-discrete;
+    transition: opacity var(--dur-2) var(--ease-out), translate var(--dur-3) var(--ease-out), scale var(--dur-3) var(--ease-out), bottom var(--dur-3) var(--ease-out), top var(--dur-3) var(--ease-out), display var(--dur-2) allow-discrete, overlay var(--dur-2) allow-discrete;
   }
   .toast:popover-open { opacity: 1; translate: 0 0; scale: 1; }
   @starting-style { .toast:popover-open { opacity: 0; translate: 0 10px; scale: .97; } }
