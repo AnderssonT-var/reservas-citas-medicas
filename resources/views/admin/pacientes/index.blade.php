@@ -1,116 +1,40 @@
-@extends('layouts.admin')
-@section('content')
-    <div class="row">
-        <h1>Listado de pacientes</h1>
-    </div>
+<x-layouts.app title="Pacientes">
+    <x-page-head title="Pacientes" :subtitle="$pacientes->total().' registrados. Los pacientes también pueden crear su propia cuenta desde la web.'">
+        <x-slot:actions><a href="{{ route('admin.pacientes.create') }}" class="btn btn-primary"><x-icon name="plus" size="18"/> Nuevo paciente</a></x-slot:actions>
+    </x-page-head>
 
-    <hr>
+    <form class="filters" method="GET" role="search">
+        <div class="field grow"><label for="q" class="sr-only">Buscar</label>
+            <div class="search"><x-icon name="search"/><input id="q" name="q" value="{{ request('q') }}" class="input" placeholder="Nombre, cédula o correo" type="search"></div></div>
+        <button class="btn">Buscar</button>
+    </form>
 
-    <div class="row">
-        <div class="col-md-12">
-            <div class="card card-outline card-primary">
-                <dv class="card-header">
-                    <h3 class="card-title">Pacientes registrados</h3>
-                    <div class="card-tools">
-                        <a href="{{url('admin/pacientes/create')}}" class="btn btn-primary">
-                            Registrar nuevo
-                        </a>
-                    </div>
-                </dv>
-                <div class="card-body">
-                    <table id="example1" class="table table-striped table-bordered table-hover table-sm">
-                        <thead style="background-color: #c0c0c0">
-                        <tr>
-                            <td style="text-align: center"><b>Nro</b></td>
-                            <td style="text-align: center"><b>Nombres y apellidos</b></td>
-                            <td style="text-align: center"><b>CI</b></td>
-                            <td style="text-align: center"><b>Nro de seguro</b></td>
-                            <td style="text-align: center"><b>Fecha de nacimiento</b></td>
-                            <td style="text-align: center"><b>Genero</b></td>
-                            <td style="text-align: center"><b>Celular</b></td>
-                            <td style="text-align: center"><b>Email</b></td>
-                            <td style="text-align: center"><b>Dirección</b></td>
-                            <td style="text-align: center"><b>Acciones</b></td>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <?php $contador = 1; ?>
-                        @foreach($pacientes as $paciente)
-                            <tr>
-                                <td style="text-align: center">{{$contador++}}</td>
-                                <td>{{$paciente->nombres}} {{$paciente->apellidos}}</td>
-                                <td>{{$paciente->ci}}</td>
-                                <td>{{$paciente->nro_seguro}}</td>
-                                <td>{{$paciente->fecha_nacimiento}}</td>
-                                <td>{{$paciente->genero}}</td>
-                                <td>{{$paciente->celular}}</td>
-                                <td>{{$paciente->correo}}</td>
-                                <td>{{$paciente->direccion}}</td>
-                                <td style="text-align: center">
-                                    <div class="btn-group" role="group" aria-label="Basic example">
-                                        <a href="{{url('admin/pacientes/'.$paciente->id)}}" type="button" class="btn btn-info btn-sm"><i class="bi bi-eye"></i></a>
-                                        <a href="{{url('admin/pacientes/'.$paciente->id.'/edit')}}" type="button" class="btn btn-success btn-sm"><i class="bi bi-pencil"></i></a>
-                                        <a href="{{url('admin/pacientes/'.$paciente->id.'/confirm-delete')}}" type="button" class="btn btn-danger btn-sm"><i class="bi bi-trash"></i></a>
-                                    </div>
-                                </td>
-                            </tr>
-                        @endforeach
-                        </tbody>
-                    </table>
-                    <script>
-                        $(function () {
-                            $("#example1").DataTable({
-                                "pageLength": 5,
-                                "language": {
-                                    "emptyTable": "No hay información",
-                                    "info": "Mostrando _START_ a _END_ de _TOTAL_ Pacientes",
-                                    "infoEmpty": "Mostrando 0 a 0 de 0 Pacientes",
-                                    "infoFiltered": "(Filtrado de _MAX_ total Pacientes)",
-                                    "infoPostFix": "",
-                                    "thousands": ",",
-                                    "lengthMenu": "Mostrar _MENU_ Pacientes",
-                                    "loadingRecords": "Cargando...",
-                                    "processing": "Procesando...",
-                                    "search": "Buscador:",
-                                    "zeroRecords": "Sin resultados encontrados",
-                                    "paginate": {
-                                        "first": "Primero",
-                                        "last": "Ultimo",
-                                        "next": "Siguiente",
-                                        "previous": "Anterior"
-                                    }
-                                },
-                                "responsive": true, "lengthChange": true, "autoWidth": false,
-                                buttons: [{
-                                    extend: 'collection',
-                                    text: 'Reportes',
-                                    orientation: 'landscape',
-                                    buttons: [{
-                                        text: 'Copiar',
-                                        extend: 'copy',
-                                    }, {
-                                        extend: 'pdf'
-                                    },{
-                                        extend: 'csv'
-                                    },{
-                                        extend: 'excel'
-                                    },{
-                                        text: 'Imprimir',
-                                        extend: 'print'
-                                    }
-                                    ]
-                                },
-                                    {
-                                        extend: 'colvis',
-                                        text: 'Visor de columnas',
-                                        collectionLayout: 'fixed three-column'
-                                    }
-                                ],
-                            }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
-                        });
-                    </script>
-                </div>
-            </div>
-        </div>
+    @if($pacientes->isEmpty())
+        <x-empty icon="users" title="No encontramos pacientes">
+            <p>Revisa la búsqueda o registra uno nuevo.</p>
+            <a href="{{ route('admin.pacientes.create') }}" class="btn btn-sm">Registrar paciente</a>
+        </x-empty>
+    @else
+    <div class="table-wrap" role="region" aria-label="Lista de pacientes" tabindex="0">
+        <table class="table">
+            <thead><tr><th>Paciente</th><th>Cédula</th><th>Teléfono</th><th>Citas</th><th>Última cita</th><th><span class="sr-only">Acciones</span></th></tr></thead>
+            <tbody>
+            @foreach($pacientes as $p)
+                <tr>
+                    <td><a href="{{ route('admin.pacientes.show', $p) }}" class="person"><x-avatar :user="$p->user"/><span><b>{{ $p->user->name }}</b><span>{{ $p->user->email }}</span></span></a></td>
+                    <td data-label="Cédula" class="num">{{ $p->cedula }}</td>
+                    <td data-label="Teléfono" class="num">{{ $p->user->telefono ?: '—' }}</td>
+                    <td data-label="Citas" class="num">{{ $p->citas_count }}</td>
+                    <td data-label="Última cita" class="muted">{{ $p->citas_max_fecha ? \Carbon\Carbon::parse($p->citas_max_fecha)->translatedFormat('j M Y') : 'Nunca' }}</td>
+                    <td class="actions">
+                        @unless($p->user->activo)<span class="chip">Inactivo</span>@endunless
+                        <a href="{{ route('admin.pacientes.edit', $p) }}" class="btn btn-sm btn-ghost"><x-icon name="edit" size="16"/> Editar</a>
+                    </td>
+                </tr>
+            @endforeach
+            </tbody>
+        </table>
     </div>
-@endsection
+    {{ $pacientes->links() }}
+    @endif
+</x-layouts.app>

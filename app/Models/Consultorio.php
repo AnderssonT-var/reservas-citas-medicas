@@ -2,25 +2,20 @@
 
 namespace App\Models;
 
-use App\User\Doctor;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Consultorio extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['nombre','ubicacion','capacidad','telefono','especialidad','estado'];
+    protected $fillable = ['nombre', 'ubicacion', 'telefono', 'activo'];
 
-    public function doctores(){
+    protected $casts = ['activo' => 'boolean'];
+
+    public function doctores(): HasMany
+    {
         return $this->hasMany(Doctor::class);
-    }
-
-    public function horarios(){
-        return $this->hasMany(Horario::class);
-    }
-
-    public function events(){
-        return $this->hasMany(Event::class);
     }
 }

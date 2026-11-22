@@ -2,24 +2,30 @@
 
 namespace App\Providers;
 
+use App\Models\Ajuste;
+use Carbon\Carbon;
+use Carbon\CarbonImmutable;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Facades\Schema;
 
 class AppServiceProvider extends ServiceProvider
 {
-    /**
-     * Register any application services.
-     */
-    public function register(): void
-    {
-        //
-    }
+    public function register(): void {}
 
-    /**
-     * Bootstrap any application services.
-     */
     public function boot(): void
     {
-        Schema::defaultStringLength(191);
+        Carbon::setLocale('es');
+        CarbonImmutable::setLocale('es');
+        setlocale(LC_TIME, 'es_EC.UTF-8', 'es_ES.UTF-8', 'es');
+
+        Model::preventLazyLoading(! $this->app->isProduction());
+        Paginator::defaultView('components.paginacion');
+
+        View::composer('*', function ($view) {
+            static $ajustes;
+            $view->with('clinica', $ajustes ??= Ajuste::todos());
+        });
     }
 }

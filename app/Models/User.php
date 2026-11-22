@@ -2,57 +2,65 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Enums\Rol;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
-
-use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    use HasRoles, HasApiTokens, HasFactory, Notifiable;
+    use HasFactory, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
-    protected $fillable = [
-        'name',
-        'email',
-        'password',
-    ];
+    protected $fillable = ['name', 'email', 'password', 'rol', 'telefono', 'activo'];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
-    protected $hidden = [
-        'password',
-        'remember_token',
-    ];
+    protected $hidden = ['password', 'remember_token'];
 
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-    ];
-
-    public function secretarias(){
-        return $this->hasOne(Secretaria::class);
+    protected function casts(): array
+    {
+        return [
+            'email_verified_at' => 'datetime',
+            'password' => 'hashed',
+            'rol' => Rol::class,
+            'activo' => 'boolean',
+        ];
     }
 
-    public function doctor(){
+    public function doctor(): HasOne
+    {
         return $this->hasOne(Doctor::class);
     }
 
-    public function events(){
-        return $this->hasMany(Event::class);
+    public function paciente(): HasOne
+    {
+        return $this->hasOne(Paciente::class);
+    }
+
+    public function esAdmin(): bool
+    {
+        return $this->rol === Rol::Admin;
+    }
+
+    public function esDoctor(): bool
+    {
+        return $this->rol === Rol::Doctor;
+    }
+
+    public function esPaciente(): bool
+    {
+        return $this->rol === Rol::Paciente;
+    }
+
+    public function iniciales(): string
+    {
+        $partes = preg_split('/\s+/', trim($this->name)) ?: [];
+        $ini = mb_substr($partes[0] ?? '', 0, 1).mb_substr($partes[1] ?? '', 0, 1);
+
+        return mb_strtoupper($ini ?: '?');
+    }
+
+    public function primerNombre(): string
+    {
+        return explode(' ', trim($this->name))[0];
     }
 }
