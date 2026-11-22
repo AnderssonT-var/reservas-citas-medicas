@@ -1,118 +1,48 @@
-@extends('layouts.admin')
-@section('content')
-    <div class="row">
-        <h1>Listado de pagos</h1>
+<x-layouts.app title="Pagos">
+    <x-page-head title="Pagos" subtitle="Cobros de consultas. Un pago anulado se conserva para auditoría.">
+        <x-slot:actions><a href="{{ route('admin.pagos.create') }}" class="btn btn-primary"><x-icon name="plus" size="18"/> Registrar pago</a></x-slot:actions>
+    </x-page-head>
+
+    <div class="stats" style="margin-bottom:1.25rem">
+        <div class="stat"><span class="stat-label">Cobrado en {{ now()->translatedFormat('F') }}</span><span class="stat-value">${{ number_format($totales['mes'], 2) }}</span></div>
+        <div class="stat"><span class="stat-label">Pendiente de cobro</span><span class="stat-value">${{ number_format($totales['pendiente'], 2) }}</span><span class="stat-note">pagos marcados como pendientes</span></div>
     </div>
 
-    <hr>
+    <form class="filters" method="GET">
+        <div class="field"><label for="estado">Estado</label>
+            <select id="estado" name="estado" class="select" data-autosubmit><option value="">Todos</option>
+                @foreach(\App\Enums\EstadoPago::cases() as $e)<option value="{{ $e->value }}" @selected(request('estado') === $e->value)>{{ $e->label() }}</option>@endforeach</select></div>
+        <div class="field"><label for="mes">Mes</label><input id="mes" type="month" name="mes" value="{{ request('mes') }}" class="input" data-autosubmit></div>
+    </form>
 
-    <div class="row">
-        <div class="col-md-12">
-            <div class="card card-outline card-primary">
-                <dv class="card-header">
-                    <h3 class="card-title">Pagos registrados</h3>
-                    <div class="card-tools">
-                        <a href="{{url('admin/pagos/create')}}" class="btn btn-primary">
-                            Registrar nuevo
-                        </a>
-                    </div>
-                </dv>
-                <div class="card-body">
-                    <table id="example1" class="table table-striped table-bordered table-hover table-sm">
-                        <thead style="background-color: #c0c0c0">
-                        <tr>
-                            <td style="text-align: center"><b>Nro</b></td>
-                            <td style="text-align: center"><b>Paciente</b></td>
-                            <td style="text-align: center"><b>Doctor</b></td>
-                            <td style="text-align: center"><b>Fecha de pago</b></td>
-                            <td style="text-align: center"><b>Monto</b></td>
-                            <td style="text-align: center"><b>Descripción</b></td>
-                            <td style="text-align: center"><b>Acciones</b></td>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <?php
-                        $contador = 1;
-                        ?>
-                        @foreach($pagos as $pago)
-                            <tr>
-                                <td style="text-align: center">{{$contador++}}</td>
-                                <td>{{$pago->paciente->apellidos." ".$pago->paciente->nombres}}</td>
-                                <td>{{$pago->doctor->apellidos." ".$pago->doctor->nombres}}</td>
-                                <td style="text-align: center">{{$pago->fecha_pago}}</td>
-                                <td>{{$pago->monto}}</td>
-                                <td>{{$pago->descripcion}}</td>
-                                <td style="text-align: center">
-                                    <div class="btn-group" role="group" aria-label="Basic example">
-                                        <a href="{{url('admin/pagos/'.$pago->id)}}" type="button" class="btn btn-info btn-sm"><i class="bi bi-eye"></i></a>
-                                        <a href="{{url('admin/pagos/pdf/'.$pago->id)}}" type="button" class="btn btn-warning btn-sm"><i class="bi bi-printer"></i></a>
-                                        <a href="{{url('admin/pagos/'.$pago->id.'/edit')}}" type="button" class="btn btn-success btn-sm"><i class="bi bi-pencil"></i></a>
-                                        <a href="{{url('admin/pagos/'.$pago->id.'/confirm-delete')}}" type="button" class="btn btn-danger btn-sm"><i class="bi bi-trash"></i></a>
-                                    </div>
-                                </td>
-                            </tr>
-                        @endforeach
-                        </tbody>
-                    </table>
-                    <hr>
-                    <p><h4>Resumen total del monto de pagos: {{$total_monto}}</h4></p>
-                    <script>
-                        $(function () {
-                            $("#example1").DataTable({
-                                "pageLength": 5,
-                                "language": {
-                                    "emptyTable": "No hay información",
-                                    "info": "Mostrando _START_ a _END_ de _TOTAL_ Pagos",
-                                    "infoEmpty": "Mostrando 0 a 0 de 0 Pagos",
-                                    "infoFiltered": "(Filtrado de _MAX_ total Pagos)",
-                                    "infoPostFix": "",
-                                    "thousands": ",",
-                                    "lengthMenu": "Mostrar _MENU_ Pagos",
-                                    "loadingRecords": "Cargando...",
-                                    "processing": "Procesando...",
-                                    "search": "Buscador:",
-                                    "zeroRecords": "Sin resultados encontrados",
-                                    "paginate": {
-                                        "first": "Primero",
-                                        "last": "Ultimo",
-                                        "next": "Siguiente",
-                                        "previous": "Anterior"
-                                    }
-                                },
-                                "responsive": true, "lengthChange": true, "autoWidth": false,
-                                buttons: [{
-                                    extend: 'collection',
-                                    text: 'Reportes',
-                                    orientation: 'landscape',
-                                    buttons: [{
-                                        text: 'Copiar',
-                                        extend: 'copy',
-                                    }, {
-                                        text:'<button class="btn btn-danger btn-sm btn-block"><i class="bi bi-file-earmark-pdf-fill"></i> PDF</button>',
-                                        extend: 'pdf'
-                                    },{
-                                        text:'<button class="btn btn-info btn-sm btn-block"><i class="bi bi-filetype-csv"></i> CSV</button>',
-                                        extend: 'csv'
-                                    },{
-                                        text:'<button class="btn btn-success btn-sm btn-block"><i class="bi bi-file-earmark-excel-fill"></i> EXCEL</button>',
-                                        extend: 'excel'
-                                    },{
-                                        text:'<button class="btn btn-warning btn-sm btn-block"><i class="bi bi-printer-fill"></i> IMPRIMIR</button>',
-                                        extend: 'print'
-                                    }
-                                    ]
-                                },
-                                    {
-                                        extend: 'colvis',
-                                        text: 'Visor de columnas',
-                                        collectionLayout: 'fixed three-column'
-                                    }
-                                ],
-                            }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
-                        });
-                    </script>
-                </div>
-            </div>
-        </div>
+    @if($pagos->isEmpty())
+        <x-empty icon="wallet" title="No hay pagos con este filtro"><a href="{{ route('admin.pagos.create') }}" class="btn btn-sm">Registrar pago</a></x-empty>
+    @else
+    <div class="table-wrap" role="region" aria-label="Pagos" tabindex="0">
+        <table class="table">
+            <thead><tr><th>Fecha</th><th>Paciente</th><th>Concepto</th><th>Método</th><th>Monto</th><th>Estado</th><th><span class="sr-only">Acciones</span></th></tr></thead>
+            <tbody>
+            @foreach($pagos as $p)
+                <tr>
+                    <td class="num">{{ $p->fecha_pago->translatedFormat('j M Y') }}</td>
+                    <td data-label="Paciente"><a class="row-link" href="{{ route('admin.pacientes.show', $p->paciente) }}">{{ $p->paciente->user->name }}</a></td>
+                    <td data-label="Concepto" class="muted">{{ $p->cita ? 'Consulta con '.$p->cita->doctor->user->name : 'Pago sin cita' }}{{ $p->referencia ? ', ref. '.$p->referencia : '' }}</td>
+                    <td data-label="Método">{{ $p->metodo->label() }}</td>
+                    <td data-label="Monto" class="num" style="font-weight:600">${{ number_format($p->monto, 2) }}</td>
+                    <td data-label="Estado"><span class="chip" data-tono="{{ $p->estado->tono() }}">{{ $p->estado->label() }}</span></td>
+                    <td class="actions">
+                        @if($p->estado === \App\Enums\EstadoPago::Pendiente)
+                            <form method="POST" action="{{ route('admin.pagos.cobrar', $p) }}" style="display:inline">@csrf<button class="btn btn-sm">Marcar cobrado</button></form>
+                        @endif
+                        @if($p->estado !== \App\Enums\EstadoPago::Anulado)
+                            <form method="POST" action="{{ route('admin.pagos.anular', $p) }}" style="display:inline" data-confirm="¿Anular este pago de ${{ number_format($p->monto, 2) }}?" data-confirm-detalle="Seguirá visible como anulado." data-confirm-boton="Anular pago">@csrf<button class="btn btn-sm btn-ghost">Anular</button></form>
+                        @endif
+                    </td>
+                </tr>
+            @endforeach
+            </tbody>
+        </table>
     </div>
-@endsection
+    {{ $pagos->links() }}
+    @endif
+</x-layouts.app>

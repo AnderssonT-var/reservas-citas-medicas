@@ -1,93 +1,29 @@
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Sistema de reserva de citas medicas</title>
-
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
-    <link rel="stylesheet" href="plugins/fontawesome-free/css/all.min.css">
-    <link rel="stylesheet" href="plugins/icheck-bootstrap/icheck-bootstrap.min.css">
-    <link rel="stylesheet" href="dist/css/adminlte.min.css?v=3.2.0">
-</head>
-<body class="hold-transition login-page"
-        style="background-image: url('{{url('assets/img/hero-bg.jpg')}}');
-            background-repeat: no-repeat;
-            background-size: 100vw 100vh;
-            background-attachment: fixed">
-<div class="login-box">
-
-    <div class="card card-outline card-primary">
-        <div class="card-header text-center">
-            <a href="" class="h1"><b>SIS MEDICAL</a>
-        </div>
-        <div class="card-body">
-            <p class="login-box-msg">Inicio de sesión</p>
-            <form method="POST" action="{{ route('login') }}">
+<x-layouts.site title="Ingresar · {{ $clinica['nombre_clinica'] }}">
+<div class="auth">
+    <div class="auth-form">
+        <a href="{{ route('inicio') }}" class="back muted small" style="display:inline-flex;gap:.3rem;align-items:center"><x-icon name="arrow-left" size="16"/> Volver al inicio</a>
+        <div class="inner">
+            <h1>Hola de nuevo</h1>
+            <p class="lede">Ingresa para ver tus citas o tu agenda del día.</p>
+            <form method="POST" action="{{ route('login') }}" class="stack">
                 @csrf
+                <x-field name="email" type="email" label="Correo" required autocomplete="email" autofocus/>
+                <x-field name="password" type="password" label="Contraseña" required autocomplete="current-password"/>
+                <label class="check"><input type="checkbox" name="recordar" value="1"> Mantener la sesión en este equipo</label>
+                <button class="btn btn-primary btn-lg w-full mt-1">Ingresar</button>
+                <p class="muted small" style="text-align:center">¿Primera vez? <a class="link" href="{{ route('registro') }}">Crea tu cuenta de paciente</a></p>
 
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="form-group">
-                            <label for="email" class="col-form-label text-md-end">Correo: </label>
-                            <div class="">
-                                <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email" autofocus>
-                                @error('email')
-                                <span class="invalid-feedback" role="alert">
-                            <strong>{{ $message }}</strong>
-                        </span>
-                                @enderror
-                            </div>
-                        </div>
-                    </div>
+                @if(app()->environment('local') || config('app.demo'))
+                <div class="demo-accounts">
+                    <p style="margin-bottom:.4rem">Cuentas de prueba (contraseña <b>password</b>):</p>
+                    <button type="button" data-demo="admin@tovelmedical.com"><b>Administración</b><span>admin@tovelmedical.com</span></button>
+                    <button type="button" data-demo="doctor@tovelmedical.com"><b>Doctor</b><span>doctor@tovelmedical.com</span></button>
+                    <button type="button" data-demo="paciente@tovelmedical.com"><b>Paciente</b><span>paciente@tovelmedical.com</span></button>
                 </div>
-
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="form-group">
-                            <label for="password" class="col-form-label text-md-end">Contraseña: </label>
-
-                            <div class="">
-                                <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" required autocomplete="current-password">
-
-                                @error('password')
-                                <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <hr>
-
-                <div class="row">
-                    <div class="col-md-12">
-                        <button type="submit" class="btn btn-primary btn-block">
-                            {{ __('Login') }}
-                        </button>
-                    </div>
-                </div>
+                @endif
             </form>
-
-            <br>
-
-            <p class="mb-0">
-                <a href="{{url('register')}}" class="text-center">¿No tienes cuenta?</a>
-            </p>
         </div>
-
     </div>
-
+    @include('auth.arte')
 </div>
-
-
-<script src="plugins/jquery/jquery.min.js"></script>
-
-<script src="plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
-
-<script src="dist/js/adminlte.min.js?v=3.2.0"></script>
-</body>
-</html>
+</x-layouts.site>
